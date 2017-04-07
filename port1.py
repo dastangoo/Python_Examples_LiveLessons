@@ -2,13 +2,15 @@
 
 import csv
 
-def portfolio_cost(filename, *,errors = 'warn'):
+def read_portfolio(filename, *,errors = 'warn'):
     '''
-    Computes total share * price for a CSV file with name, data, shares, price Data
+    Read a CSV file with name, data, shares, price data in a list.
     '''
     if errors not in {'warn', 'silent', 'raise'}:
         raise ValueError("erros must be one of 'warn', 'silent', 'raise'")
-    total = 0.0
+
+    portfolio = []  # List of records
+
     with open(filename, 'r') as f:
         rows = csv.reader(f)
         headers = next(rows)
@@ -25,8 +27,20 @@ def portfolio_cost(filename, *,errors = 'warn'):
                 else:
                     pass    # Ignore
                 continue    # Skips to the next row
-            total += row[2] * row[3]
-    return total
+            record = {
+                'name': row[0],
+                'date': row[1],
+                'shares': row[2],
+                'price': row[3]
+            }
 
-total = portfolio_cost('Data/bogus.csv', errors = 'silent')
-print('Total cost: ', total)
+            portfolio.append(record)
+    return portfolio
+
+portfolio = read_portfolio('Data/portfolio.csv')
+# print(portfolio)
+total = 0.0
+for holding in portfolio:
+    total +=   holding['shares'] * holding['price']    # Shares * price
+
+print('Total cost:', total)
