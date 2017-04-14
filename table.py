@@ -3,11 +3,14 @@ def print_table(objects, colnames):
     '''
     Make a nicely formatted table showing attributes from a list of objects
     '''
-    for colname in colnames:
-        print('{:>10s}'.format(colname), end='')
-    print()
+    formatter.headings(colnames)
 
     for obj in objects:
-        for colname in colnames:
-            print('{:>10s}'.format(str(getattr(obj, colname))), end='')
-        print()
+        rowdata = [str(getattr(obj, colname)) for colname in colnames]
+        formatter.row(rowd)
+
+class TableFormatter(object):
+    def headings(self, headers):
+        raise NotImplementedError
+    def row(self, rowdata):
+        raise NotImplementedError
