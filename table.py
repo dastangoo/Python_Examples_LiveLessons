@@ -1,4 +1,5 @@
 # table.py
+import sys
 def print_table(objects, colnames, formatter):
     '''
     Make a nicely formatted table showing attributes from a list of objects
@@ -10,6 +11,10 @@ def print_table(objects, colnames, formatter):
         formatter.row(rowdata)
 
 class TableFormatter(object):
+    def __init__(self, outfile=None):
+        if outfile == None:
+            outfile = sys.stdout
+        self.outfile = outfile
     # Serves a design spec for making tables (use inheritance to customize)
     def headings(self, headers):
         raise NotImplementedError
@@ -17,15 +22,18 @@ class TableFormatter(object):
         raise NotImplementedError
 
 class TextFormatter(TableFormatter):
+    def __init__(self, outfile=None, width=10):
+        super().__init__(outfile)   # Initialize parent
+        self.width = width
     def headings(self, headers):
         for header in headers:
-            print('{:>10s}'.format(header), end=' ')
-        print()
+            print('{:>{}s}'.format(header, self.width), end=' ', file=self.outfile)
+        print(file=self.outfile)
 
     def row(self, rowdata):
         for item in rowdata:
-            print('{:>10s}'.format(item), end=' ')
-        print()
+            print('{:>{}s}'.format(item, self.width), end=' ', file=self.outfile)
+        print(file=self.outfile)
         ...
 class CSVFormatter(TableFormatter):
     def headings(self, headers):
@@ -44,3 +52,7 @@ class HTMLFormatter(TableFormatter):
         for d in rowdata:
             print('<td>{}</td>'.format(d), end='')
         print('</tr>')
+class QuotedMixin(object):
+    def row(self, rowdata):
+        quoted = [ '"{}"'.format(d) for d in rowdata]
+        super().row(quoted)
