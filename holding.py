@@ -25,7 +25,7 @@ class Holding(object):
         if not isinstance(newshares, int):
             raise TypeError('Expected int')
         self._shares = newshares
-        
+
     @property
     def cost(self):
         return self.shares * self.price
@@ -52,6 +52,8 @@ def read_portfolio(filename):
 class Portfolio(object):
     def __init__(self):
         self.holdings = []
+    def __getattr__(self, name):
+        return getattr(self.holdings, name)
     @classmethod
     def from_csv(cls, filename):
         self = cls()
