@@ -10,6 +10,7 @@ def print_table(objects, colnames, formatter):
         rowdata = [str(getattr(obj, colname)) for colname in colnames]
         formatter.row(rowdata)
 
+
 class TableFormatter(object):
     def __init__(self, outfile=None):
         if outfile == None:
@@ -20,6 +21,17 @@ class TableFormatter(object):
         raise NotImplementedError
     def row(self, rowdata):
         raise NotImplementedError
+    def print_table(self, objects, colnames):
+        '''
+        Make a nicely formatted table showing attributes from a list of objects
+        '''
+        self.headings(colnames)
+
+        for obj in objects:
+            rowdata = [str(getattr(obj, colname)) for colname in colnames]
+            self.row(rowdata)
+
+
 
 class TextFormatter(TableFormatter):
     def __init__(self, outfile=None, width=10):
@@ -56,3 +68,16 @@ class QuotedMixin(object):
     def row(self, rowdata):
         quoted = [ '"{}"'.format(d) for d in rowdata]
         super().row(quoted)
+
+class TablePrinter(object):
+    def __init__(self, formatter):
+        self.formatter = formatter
+    def print_table(self, objects, colnames):
+        '''
+        Make a nicely formatted table showing attributes from a list of objects
+        '''
+        self.formatter.headings(colnames)
+
+        for obj in objects:
+            rowdata = [str(getattr(obj, colname)) for colname in colnames]
+            self.formatter.row(rowdata)
