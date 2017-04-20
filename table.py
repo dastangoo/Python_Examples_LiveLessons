@@ -1,9 +1,14 @@
 # table.py
 import sys
+from abc import ABC, abstractmethod
 def print_table(objects, colnames, formatter):
     '''
     Make a nicely formatted table showing attributes from a list of objects
     '''
+
+    if not isinstance(formatter, TableFormatter):
+        raise TypeError('formatter must be a TableFormatter')
+
     formatter.headings(colnames)
 
     for obj in objects:
@@ -11,16 +16,18 @@ def print_table(objects, colnames, formatter):
         formatter.row(rowdata)
 
 
-class TableFormatter(object):
+class TableFormatter(ABC):
     def __init__(self, outfile=None):
         if outfile == None:
             outfile = sys.stdout
         self.outfile = outfile
     # Serves a design spec for making tables (use inheritance to customize)
+    @abstractmethod
     def headings(self, headers):
-        raise NotImplementedError
+        pass
+    @abstractmethod
     def row(self, rowdata):
-        raise NotImplementedError
+        pass
     def print_table(self, objects, colnames):
         '''
         Make a nicely formatted table showing attributes from a list of objects
@@ -41,13 +48,12 @@ class TextFormatter(TableFormatter):
         for header in headers:
             print('{:>{}s}'.format(header, self.width), end=' ', file=self.outfile)
         print(file=self.outfile)
-
     def row(self, rowdata):
         for item in rowdata:
             print('{:>{}s}'.format(item, self.width), end=' ', file=self.outfile)
         print(file=self.outfile)
         ...
-class CSVFormatter(TableFormatter):
+class CSVFormatter(object):
     def headings(self, headers):
         print(','.join(headers))
     def row(self, rowdata):
