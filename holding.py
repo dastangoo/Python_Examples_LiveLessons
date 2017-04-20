@@ -25,6 +25,7 @@ class Holding(object):
         if not isinstance(newshares, int):
             raise TypeError('Expected int')
         self._shares = newshares
+        
     @property
     def cost(self):
         return self.shares * self.price
