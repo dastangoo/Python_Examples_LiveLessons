@@ -1,7 +1,7 @@
 # validate.py
 class Typed(object):
     expected_type = object
-    def __init__(self, name=None):
+    def __init__(self, name):
         self.name = name
     def __get__(self, instance, cls):
         return instance.__dict__[self.name]
@@ -17,19 +17,10 @@ class Float(Typed):
 class String(Typed):
     expected_type = str
 
-def typed(cls):
-    for key, value in vars(cls).items():
-        if isinstance(value, Typed):
-            value.name = key
-        return cls
-def validate(**kwargs):
-    def decorate(cls):
-        for name, val in kwargs.items():
-            setattr(cls, name, val(name))
-        return cls
-    return decorate
-@validate(name=String, shares = Integer, price = Float)
 class Holding(object):
+    name = String('name')
+    shares = Integer('shares')
+    price = Float('price')
     def __init__(self, name, date, shares, price):
         self.name = name
         self.date = date
