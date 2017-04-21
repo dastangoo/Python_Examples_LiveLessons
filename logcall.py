@@ -12,3 +12,11 @@ def logformat(fmt):
             return func(*args, **kwargs)
         return wrapper
     return logged
+logged = logformat('YOU ARE CALLING {func.__name__}')
+
+def logmethods(cls):
+    for key, value in list(vars(cls).items()):
+        if callable(value):
+            # Is it a method? If so, decorate
+            setattr(cls, key, logged(value))
+    return cls
